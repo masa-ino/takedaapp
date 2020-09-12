@@ -57,7 +57,7 @@
               <li class="check_left">科目</li>
               <li class="check_center">:</li>
               @foreach($user->subjects as $index => $subject)
-              <li class="right">{{$subject['name']}}</li>
+              <li class="check_right">{{$subject['name']}}</li>
               @endforeach
             </ul>
           </li>

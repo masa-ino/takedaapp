@@ -73,9 +73,19 @@ class AdminController extends Controller
     public function user_delete(User $user)
     {
         if ($user != null) {
-            $delete_subjects = Subject::where('user_id', $user->id);
-
-            $delete_subjects->delete();
+            $delete_subjects = Subject::where('user_id', $user->id)->get();
+            $subject_id = $delete_subjects[0]->id;
+            $delete_times =Time::where('subject_id', $subject_id)->get();
+            foreach($delete_times as $delete_time){
+                $delete_time->delete();
+            }
+            foreach($delete_subjects as $delete_subject){
+                $delete_subject->delete();
+            }
+            $delete_spare_times = Spare_time::where('user_id', $user->id)->get();
+            foreach($delete_spare_times as $delete_spare_time){
+                $delete_spare_time->delete();
+            }
             $user->delete();
             $result = 'success';
         } else {
