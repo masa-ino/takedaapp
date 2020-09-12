@@ -78,14 +78,17 @@ class UserController extends Controller
                 $user_time->is_reserved = false;
                 $user_time->timestamps = false;
                 $user_time->save();
-
-                $user_spare_time = new Spare_time();
-                $user_spare_time->time_name = $time;
-                $user_spare_time->user_id = $user_id;
-                $user_spare_time->timestamps = false;
-                $user_spare_time->save();
             }
         }
+
+        foreach ($request->times as $time) {
+            $user_spare_time = new Spare_time();
+            $user_spare_time->time_name = $time;
+            $user_spare_time->user_id = $user_id;
+            $user_spare_time->timestamps = false;
+            $user_spare_time->save();
+        }
+
 
         $user = User::with([
             'subjects',

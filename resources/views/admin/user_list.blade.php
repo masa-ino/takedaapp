@@ -41,6 +41,7 @@
         </div>
       </div>
     </div>
+    <form id="modal_form{{$user->id}}" class ="form_button" action="{{ route('admin.user_delete', ['user' => $user->id]) }}" method="POST">@csrf
     <div id="modal-example{{$user->id}}" uk-modal>
       <div class="uk-modal-dialog uk-modal-body uk-text-center">
         <h2 class="uk-modal-title uk-margin">確認画面</h2>
@@ -64,12 +65,11 @@
         </ul>
         <p>
           <button class="uk-button uk-button-secondary uk-modal-close" type="button">キャンセル</button>
-          <form action="{{ route('admin.user_delete', ['user' => $user->id]) }}" method="POST">@csrf
-            <button class="uk-button uk-button-default" type="submit">削除する</button>
-          </form>
+            <button form="modal_form{{$user->id}}" class="uk-button uk-button-default" type="submit">削除する</button>
         </p>
       </div>
     </div>
+    </form>
     @endforeach
   </div>
 </div>

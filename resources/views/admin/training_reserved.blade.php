@@ -21,7 +21,7 @@
     @foreach ($users as $user)
     @foreach ($user->subjects as $subject)
     @foreach ($subject->times as $time)
-    <form id="modal_form" method="POST" action="{{ route('admin.training_reserved_result', ['time' => $time->id]) }}">
+    <form id="modal_form{{$time->id}}" method="POST" action="{{ route('admin.training_reserved_result', ['time' => $time->id]) }}">
       @csrf
       <div class="uk-card uk-card-default uk-card-body uk-margin">
         <div class=" uk-margin one_class">
@@ -47,7 +47,7 @@
           </div>
           <p>
             <button class="uk-button uk-button-secondary uk-modal-close" type="button">キャンセル</button>
-            <button class="uk-button uk-button-default" type="submit" form="modal_form">解除する</button>
+            <button class="uk-button uk-button-default" type="submit" form="modal_form{{$time->id}}">解除する</button>
           </p>
         </div>
       </div>

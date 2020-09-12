@@ -74,16 +74,15 @@ class AdminController extends Controller
     {
         if ($user != null) {
             $delete_subjects = Subject::where('user_id', $user->id)->get();
-            $subject_id = $delete_subjects[0]->id;
-            $delete_times =Time::where('subject_id', $subject_id)->get();
-            foreach($delete_times as $delete_time){
-                $delete_time->delete();
-            }
-            foreach($delete_subjects as $delete_subject){
+            foreach ($delete_subjects as $delete_subject) {
+                $delete_times = Time::where('subject_id', $delete_subject->id)->get();
+                foreach ($delete_times as $delete_time) {
+                    $delete_time->delete();
+                }
                 $delete_subject->delete();
             }
             $delete_spare_times = Spare_time::where('user_id', $user->id)->get();
-            foreach($delete_spare_times as $delete_spare_time){
+            foreach ($delete_spare_times as $delete_spare_time) {
                 $delete_spare_time->delete();
             }
             $user->delete();
@@ -113,9 +112,15 @@ class AdminController extends Controller
 
         $user->updated_at = Carbon::now();
         $delete_subjects = Subject::where('user_id', $user->id)->get();
-        foreach($delete_subjects as $delete_subject){
+        foreach ($delete_subjects as $delete_subject) {
+            $delete_times = Time::where('subject_id', $delete_subject->id)->get();
+            foreach ($delete_times as $delete_time) {
+                $delete_time->delete();
+            }
             $delete_subject->delete();
         }
+
+
 
         foreach ($request->subjects as $subject) {
             $user_subject = new Subject();

@@ -16,7 +16,7 @@
     @foreach ($users as $user)
     @foreach ($user->subjects as $subject)
     @foreach ($subject->times as $time)
-    <form id="modal_form" method="POST" action="{{ route('admin.training_search_result', ['time' => $time->id]) }}">
+    <form id="modal_form{{$time->id}}" method="POST" action="{{ route('admin.training_search_result', ['time' => $time->id]) }}">
       @csrf
       <div class="uk-card uk-card-default uk-card-body uk-margin">
         <div class=" uk-margin one_class">
@@ -26,11 +26,11 @@
           <p class="uk-margin uk-text-center uk-margin-small">{{$subject->name}}</p>
           <p class="uk-margin uk-margin-small uk-text-center">{{$user->name}}</p>
           <div class="uk-text-center">
-            <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #modal-example">予約する</button>
+            <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #modal-example{{$time->id}}">予約する</button>
           </div>
         </div>
       </div>
-      <div id="modal-example" uk-modal>
+      <div id="modal-example{{$time->id}}" uk-modal>
         <div class="uk-modal-dialog uk-modal-body uk-text-center">
           <h2 class="uk-modal-title uk-margin">確認画面</h2>
           <div class=" uk-margin one_class modal_one_class">
@@ -42,7 +42,7 @@
           </div>
           <p>
             <button class="uk-button uk-button-secondary uk-modal-close" type="button">キャンセル</button>
-            <button class="uk-button uk-button-default" type="submit" form="modal_form">予約する</button>
+            <button class="uk-button uk-button-default" type="submit" form="modal_form{{$time->id}}">予約する</button>
           </p>
         </div>
       </div>

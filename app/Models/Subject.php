@@ -11,13 +11,4 @@ class Subject extends Model
     {
         return $this->hasMany('App\Models\Time');
     }
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::deleting(function ($model) {
-            $times = Time::where('subject_id',$model->id);
-            $times->delete();
-        });
-    }
 }
