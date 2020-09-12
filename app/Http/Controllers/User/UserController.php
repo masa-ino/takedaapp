@@ -56,13 +56,16 @@ class UserController extends Controller
             'subjects',
             'subjects.times'
         ])->find($user_id);
-        $subject_id = Subject::where('user_id',$user_id)->first();
-        $subject_id = $subject_id->id;
-        $times_delete = Time::where("subject_id", $subject_id);
-        $spare_time = Spare_time::where("user_id", $user_id);
-        if ($times_delete != null) {
-            $times_delete->delete();
+        $subject_id = Subject::where('user_id',$user_id)->get();
+        foreach($subject_id as $id){
+            $times_delete = Time::where("subject_id", $id->id)->get();
+            if ($times_delete != null) {
+                foreach($times_delete as $time_delete){
+                    $time_delete->delete();
+                }
+            }
         }
+        $spare_time = Spare_time::where("user_id", $user_id);
 
         if ($spare_time != null) {
             $spare_time->delete();
