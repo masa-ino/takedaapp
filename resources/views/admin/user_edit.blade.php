@@ -30,7 +30,7 @@
           <label><input class="uk-checkbox" type="checkbox" name="subjects[]" v-model="form.subjects" value="政経"> 政経</label>
           <label><input class="uk-checkbox" type="checkbox" name="subjects[]" v-model="form.subjects" value="倫政"> 倫政</label>
         </div>
-        <small v-bind:class="{'is-hide':validation.subjects}" class="form-text text-info">@{{ errorMessage.subjects }}</small>
+        <small v-bind:class="{'is-hide':validation.subjects}" class="check_message" v-if="form.subjects.length == 0">@{{ errorMessage.subjects }}</small>
       </div>
       <div class="uk-text-center uk-margin">
         <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #modal-example" v-on:click="checkFrom" v-bind:disabled="!isValid">登録する</button>

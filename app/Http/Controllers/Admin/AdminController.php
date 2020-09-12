@@ -124,15 +124,14 @@ class AdminController extends Controller
             $user_subject->timestamps = false;
             $user_subject->save();
         }
-        $spare_times = Spare_time::where("user_id", $user->id);
+        $spare_times = Spare_time::where("user_id", $user->id)->get();
         if ($spare_times != null) {
-            $subjects = DB::select("SELECT * FROM subjects WHERE user_id = '$user->id'");
-
+            $subjects = Subject::where('user_id', $user->id)->get();
             foreach ($subjects as $subject) {
                 foreach ($spare_times as $time) {
                     $user_time = new Time();
                     $user_time->subject_id = $subject->id;
-                    $user_time->time_name = $time->name;
+                    $user_time->time_name = $time->time_name;
                     $user_time->is_reserved = false;
                     $user_time->timestamps = false;
                     $user_time->save();

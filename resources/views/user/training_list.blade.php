@@ -22,10 +22,10 @@
 
   <div class="uk-margin uk-card uk-card-default uk-card-body">
     <ul class="check_list">
-      @foreach($times as $time)
+      @foreach($time_list as $time)
       <li class=" uk-margin one_class">
         <ul class="create_class">
-          <li class="center">{{$time->time_name}}</li>
+          <li class="center">{{$time}}</li>
         </ul>
       </li>
       @endforeach

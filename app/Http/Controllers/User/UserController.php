@@ -25,6 +25,11 @@ class UserController extends Controller
         $subject_id = DB::select("SELECT id FROM subjects WHERE user_id = '$user_id'");
         $subject_id = $subject_id[0]->id;
         $times = DB::select("SELECT * FROM times WHERE subject_id = '$subject_id'");
+        $time_list = [];
+        foreach($times as $time){
+            $time_list[] = $time->time_name;
+        }
+        $time_list = array_unique($time_list);
         $reserveds = User::with([
             'subjects',
             'subjects.times' => function ($query) {
@@ -32,7 +37,7 @@ class UserController extends Controller
             },
         ])->find($user_id);
         return view('user/training_list', [
-            'times' => $times,
+            'time_list' => $time_list,
             'reserveds' => $reserveds,
             'result' => 'none',
         ]);
@@ -89,6 +94,11 @@ class UserController extends Controller
         $subject_id = DB::select("SELECT id FROM subjects WHERE user_id = '$user_id'");
         $subject_id = $subject_id[0]->id;
         $times = DB::select("SELECT * FROM times WHERE subject_id = '$subject_id'");
+        $time_list = [];
+        foreach($times as $time){
+            $time_list[] = $time->time_name;
+        }
+        $time_list = array_unique($time_list);
 
         $reserveds = User::with([
             'subjects',
@@ -100,7 +110,7 @@ class UserController extends Controller
         $result = 'success';
         return view('user/training_list', [
             'user' => $user,
-            'times' => $times,
+            'time_list' => $time_list,
             'result' => $result,
             'reserveds' =>$reserveds,
         ]);
