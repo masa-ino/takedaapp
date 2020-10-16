@@ -37,8 +37,19 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => [
+                'daily',
+                'errors' //送信するチャネルにerrorsの追加
+            ],
             'ignore_exceptions' => false,
+        ],
+
+        // エラーのみを出力するチャネルを追加
+       'errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/errors.log'),
+            'level' => 'error',
+            'days' => 14,
         ],
 
         'single' => [
