@@ -50,6 +50,9 @@ class UserController extends Controller
             }
             $reserve_list[$value] = $kamoku;
         }
+        if(empty($reserve_list)){
+            $reserve_list = null;
+        }
         return view('user/training_list', [
             'time_list' => $time_list,
             'reserve_list' => $reserve_list,

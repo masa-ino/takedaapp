@@ -378,8 +378,9 @@ class AdminController extends Controller
             'subjects' => function ($query) use ($request) {
                 $query->whereIn('name', $request->subjects);
             },
-            'subjects.times' => function ($query) {
-                $query->where('is_reserved', true);
+            'subjects.times' => function ($query) use($request){
+                $query->where('is_reserved', true)
+                ->where('time_name',$request->time);
             }
         ])->find($user->id);
         foreach ($users->subjects as $subject) {
