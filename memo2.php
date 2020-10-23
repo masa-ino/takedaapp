@@ -166,7 +166,6 @@ class AdminController extends Controller
     {
         $subject_list = [];
         $time_list = [];
-        $user_list = [];
         $result = 'none';
         if ($request->subjects && $request->times) {
             foreach ($request->subjects as $subject_key => $subject) {
@@ -178,28 +177,18 @@ class AdminController extends Controller
 
             $users = User::with([
                 'subjects' => function ($query) use ($subject_list) {
-                    $query->whereIn('name', $subject_list);
+                    foreach($subject_list as $subject){
+                        $query
+                        ->where('name', $subject->name);
+                    }
                 },
                 'subjects.times' => function ($query) use ($time_list) {
                     $query->whereIn('time_name', $time_list);
-                    $query->where('no_search', false);
+                    $query->where('is_reserved', 'false');
                 },
             ])->get();
             $i = 0;
             foreach ($users as $user) {
-                $subject_check = 0;
-                foreach ($user->subjects as $subject) {
-                    foreach ($subject_list as $subject_part) {
-                        if ($subject_part === $subject->name) {
-                            $subject_check++;
-                        }
-                    }
-                }
-                if ($subject_check === count($subject_list)) {
-                    array_push($user_list, $user);
-                }
-            }
-            foreach ($user_list as $user) {
                 foreach ($user->subjects as $subject) {
                     foreach ($subject->times as $time) {
                         if ($subject && $time) {
@@ -221,24 +210,11 @@ class AdminController extends Controller
                     $query->whereIn('name', $subject_list);
                 },
                 'subjects.times' => function ($query) {
-                    $query->where('no_search', false);
+                    $query->where('is_reserved', 'false');
                 },
             ])->get();
             $i = 0;
             foreach ($users as $user) {
-                $subject_check = 0;
-                foreach ($user->subjects as $subject) {
-                    foreach ($subject_list as $subject_part) {
-                        if ($subject_part === $subject->name) {
-                            $subject_check++;
-                        }
-                    }
-                }
-                if ($subject_check === count($subject_list)) {
-                    array_push($user_list, $user);
-                }
-            }
-            foreach ($user_list as $user) {
                 foreach ($user->subjects as $subject) {
                     foreach ($subject->times as $time) {
                         if ($subject && $time) {
@@ -259,7 +235,7 @@ class AdminController extends Controller
                 'subjects',
                 'subjects.times' => function ($query) use ($time_list) {
                     $query->whereIn('time_name', $time_list);
-                    $query->where('is_reserved', false);
+                    $query->where('is_reserved', 'false');
                 },
             ])->get();
             $i = 0;
@@ -279,43 +255,16 @@ class AdminController extends Controller
             $users = null;
         }
         return view('admin/result_search', [
-            'users' => $user_list,
+            'users' => $users,
             'result' => $result,
-            'subjects' => $subject_list,
         ]);
     }
 
-    public function post_training_search_result(User $user, Time $time, Request $request)
+    public function post_training_search_result(Time $time)
     {
-        $subjects = $request->subjects;
-        $search_user = User::with([
-            'subjects' => function ($query) use ($subjects) {
-                $query->whereIn('name', $subjects);
-            },
-            'subjects.times' => function ($query) use ($time) {
-                $query->where('time_name', $time->time_name);
-            },
-        ])->find($user->id);
-        foreach ($search_user->subjects as $search_subject) {
-            foreach ($search_subject->times as $search_time) {
-                $search_time->is_reserved = true;
-                $search_time->timestamps = false;
-                $search_time->save();
-            }
-        }
-        $no_search_user = User::with([
-            'subjects',
-            'subjects.times' => function ($query) use ($time) {
-                $query->where('time_name', $time->time_name);
-            },
-        ])->find($user->id);
-        foreach ($no_search_user->subjects as $search_subject) {
-            foreach ($search_subject->times as $search_time) {
-                $search_time->no_search = true;
-                $search_time->timestamps = false;
-                $search_time->save();
-            }
-        }
+        $time->is_reserved = true;
+        $time->timestamps = false;
+        $time->save();
         $result = 'success';
         return view('admin/training_search', [
             'result' => $result,
@@ -330,126 +279,27 @@ class AdminController extends Controller
                 $query->where('is_reserved', true);
             },
         ])->get();
-        $user_list = [];
-        foreach ($users as $user) {
-            $user_content = [];
-            $user_content['name'] = $user->name;
-            $user_content['id'] = $user->id;
-
-            $time_unique = [];
-            foreach ($user->subjects as $subject) {
-                foreach ($subject->times as $time) {
-                    array_push($time_unique, $time->time_name);
-                }
-            }
-            $time_unique = array_unique($time_unique);
-            $times_list = [];
-            foreach ($time_unique as $value) {
-                $reserve_list = [];
-                $kamoku = [];
-                foreach ($user->subjects as $subject) {
-                    foreach ($subject->times as $time) {
-                        if ($time->time_name === $value) {
-                            array_push($kamoku, $subject->name);
-                        }
-                    }
-                }
-                $reserve_list['time_name'] = $value;
-                $reserve_list['subjects'] = $kamoku;
-                array_push($times_list, $reserve_list);
-            }
-            $user_content['times'] = $times_list;
-            if (!empty($user_content['times'])) {
-                array_push($user_list, $user_content);
-            }
-        }
-
-
-
         return view('admin/training_reserved', [
-            'users' => $user_list,
+            'users' => $users,
             'result' => 'none',
         ]);
     }
 
-    public function post_training_reserved(User $user, Request $request)
+    public function post_training_reserved(Time $time)
     {
-        $users = User::with([
-            'subjects' => function ($query) use ($request) {
-                $query->whereIn('name', $request->subjects);
-            },
-            'subjects.times' => function ($query) {
-                $query->where('is_reserved', true);
-            }
-        ])->find($user->id);
-        foreach ($users->subjects as $subject) {
-            foreach ($subject->times as $time) {
-                $time->is_reserved = false;
-                $time->timestamps = false;
-                $time->save();
-            }
-        }
-        $search_users = User::with([
-            'subjects',
-            'subjects.times' => function ($query) use ($request) {
-                $query->where('time_name', $request->time);
-            },
-        ])->find($user->id);
-        foreach ($search_users->subjects as $subject) {
-            foreach ($subject->times as $time) {
-                $time->no_search = false;
-                $time->timestamps = false;
-                $time->save();
-            }
-        }
+        $time->is_reserved = false;
+        $time->timestamps = false;
+        $time->save();
         $result = 'success';
-
-
-        $update_users = User::with([
+        $users = User::with([
             'subjects',
             'subjects.times' => function ($query) {
                 $query->where('is_reserved', true);
             },
         ])->get();
-        $user_list = [];
-        foreach ($update_users as $user_one) {
-            $user_content = [];
-            $user_content['name'] = $user_one->name;
-            $user_content['id'] = $user_one->id;
-
-            $time_unique = [];
-            foreach ($user_one->subjects as $subject) {
-                foreach ($subject->times as $time) {
-                    array_push($time_unique, $time->time_name);
-                }
-            }
-            $time_unique = array_unique($time_unique);
-            $times_list = [];
-            foreach ($time_unique as $value) {
-                $reserve_list = [];
-                $kamoku = [];
-                foreach ($user_one->subjects as $subject) {
-                    foreach ($subject->times as $time) {
-                        if ($time->time_name === $value) {
-                            array_push($kamoku, $subject->name);
-                        }
-                    }
-                }
-                $reserve_list['time_name'] = $value;
-                $reserve_list['subjects'] = $kamoku;
-                array_push($times_list, $reserve_list);
-            }
-            $user_content['times'] = $times_list;
-            if (!empty($user_content['times'])) {
-                array_push($user_list, $user_content);
-            }
-        }
-
-
-
         return view('admin/training_reserved', [
-            'users' => $user_list,
-            'result' => 'none',
+            'users' => $users,
+            'result' => $result,
         ]);
     }
 }

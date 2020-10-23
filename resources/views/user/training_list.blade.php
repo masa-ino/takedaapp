@@ -37,18 +37,22 @@
 
   <h2 class="uk-heading-small uk-text-center uk-text-bold">予約済み特訓</h2>
   <div class="uk-margin">
-    @foreach ($reserveds->subjects as $subject)
-    @foreach ($subject->times as $time)
+    @if($reserve_list !== null)
+    @foreach ($reserve_list as $time => $subjects)
     <div class="uk-card uk-card-default uk-card-body uk-margin">
       <div class=" uk-margin one_class">
         <ul class="create_class">
-          <li class="center">{{$time->time_name}}</li>
+          <li class="center">{{$time}}</li>
         </ul>
       </div>
-      <p class="uk-margin uk-text-center">{{$subject->name}}</p>
+      <p class="uk-margin uk-text-center">
+        @foreach ($subjects as $subject)
+        {{$subject}}
+        @endforeach
+      </p>
     </div>
     @endforeach
-    @endforeach
+    @endif
   </div>
 </div>
 

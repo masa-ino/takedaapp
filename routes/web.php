@@ -56,10 +56,10 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/training_search', 'AdminController@post_training_search')->name('training_search');
 
-    Route::post('/training_search/{time}/result', 'AdminController@post_training_search_result')->name('training_search_result');
+    Route::post('/training_search/{user}/{time}/result', 'AdminController@post_training_search_result')->name('training_search_result');
 
     Route::get('/training_reserved', 'AdminController@training_reserved')->name('training_reserved');
 
-    Route::post('/training_reserved/{time}/result', 'AdminController@post_training_reserved')->name('training_reserved_result');
+    Route::post('/training_reserved/{user}/result', 'AdminController@post_training_reserved')->name('training_reserved_result');
   });
 });

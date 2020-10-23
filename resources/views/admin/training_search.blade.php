@@ -22,6 +22,9 @@
     <form id="modal_form" method="POST" action="{{ route('admin.training_search') }}">@csrf
       <div class="uk-card uk-card-default uk-card-body uk-margin">
         <h3 class="uk-card-title uk-text-center uk-margin uk-text-bold">科目</h3>
+        <p class="uk-text-center uk-text-small uk-margin-small uk-text-danger">
+          「現代文」と「古文」で検索した場合、現代文と古文の両方を登録している講師が対象となります
+        </p>
         <div class="uk-margin uk-grid-small uk-child-width-1-6@s uk-child-width-1-3 uk-grid">
           <label><input class="uk-checkbox" type="checkbox" name="subjects[]" v-model="checkBox.subjects" value="現代文"> 現代文</label>
           <label><input class="uk-checkbox" type="checkbox" name="subjects[]" v-model="checkBox.subjects" value="古文"> 古文</label>
@@ -46,6 +49,9 @@
       <div class="uk-card uk-card-default uk-card-body">
         <h3 class="uk-card-title uk-text-center uk-margin uk-text-bold">日程</h3>
         <div class="uk-overflow-auto">
+        <p class="uk-text-center uk-text-small uk-margin-small uk-text-danger">
+          「月1限」と「火1限」で検索した場合、月1限と火1限のどちらかを登録している講師が対象となります。
+        </p>
           <table class="uk-table uk-table-small uk-table-divider uk-table-striped">
             <thead>
               <tr>

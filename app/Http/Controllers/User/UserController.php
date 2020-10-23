@@ -18,15 +18,11 @@ class UserController extends Controller
     public function training_list()
     {
         $user_id = Auth::id();
-        $user = User::with([
-            'subjects',
-            'subjects.times'
-        ])->find($user_id);
         $subject_id = DB::select("SELECT id FROM subjects WHERE user_id = '$user_id'");
         $subject_id = $subject_id[0]->id;
         $times = DB::select("SELECT * FROM times WHERE subject_id = '$subject_id'");
         $time_list = [];
-        foreach($times as $time){
+        foreach ($times as $time) {
             $time_list[] = $time->time_name;
         }
         $time_list = array_unique($time_list);
@@ -36,9 +32,27 @@ class UserController extends Controller
                 $query->where('is_reserved', true);
             },
         ])->find($user_id);
+        $time_unique = [];
+        foreach ($reserveds->subjects as $subject) {
+            foreach ($subject->times as $time) {
+                array_push($time_unique, $time->time_name);
+            }
+        }
+        $time_unique = array_unique($time_unique);
+        foreach ($time_unique as $value) {
+            $kamoku = [];
+            foreach ($reserveds->subjects as $subject) {
+                foreach ($subject->times as $time) {
+                    if ($time->time_name === $value) {
+                        array_push($kamoku, $subject->name);
+                    }
+                }
+            }
+            $reserve_list[$value] = $kamoku;
+        }
         return view('user/training_list', [
             'time_list' => $time_list,
-            'reserveds' => $reserveds,
+            'reserve_list' => $reserve_list,
             'result' => 'none',
         ]);
     }
@@ -52,15 +66,11 @@ class UserController extends Controller
     {
 
         $user_id = Auth::id();
-        $user = User::with([
-            'subjects',
-            'subjects.times'
-        ])->find($user_id);
-        $subject_id = Subject::where('user_id',$user_id)->get();
-        foreach($subject_id as $id){
+        $subject_id = Subject::where('user_id', $user_id)->get();
+        foreach ($subject_id as $id) {
             $times_delete = Time::where("subject_id", $id->id)->get();
             if ($times_delete != null) {
-                foreach($times_delete as $time_delete){
+                foreach ($times_delete as $time_delete) {
                     $time_delete->delete();
                 }
             }
@@ -93,32 +103,45 @@ class UserController extends Controller
         }
 
 
-        $user = User::with([
-            'subjects',
-            'subjects.times'
-        ])->find($user_id);
         $subject_id = DB::select("SELECT id FROM subjects WHERE user_id = '$user_id'");
         $subject_id = $subject_id[0]->id;
         $times = DB::select("SELECT * FROM times WHERE subject_id = '$subject_id'");
         $time_list = [];
-        foreach($times as $time){
+        foreach ($times as $time) {
             $time_list[] = $time->time_name;
         }
         $time_list = array_unique($time_list);
-
         $reserveds = User::with([
             'subjects',
             'subjects.times' => function ($query) {
                 $query->where('is_reserved', true);
             },
         ])->find($user_id);
-
-        $result = 'success';
+        $time_unique = [];
+        foreach ($reserveds->subjects as $subject) {
+            foreach ($subject->times as $time) {
+                array_push($time_unique, $time->time_name);
+            }
+        }
+        $time_unique = array_unique($time_unique);
+        foreach ($time_unique as $value) {
+            $kamoku = [];
+            foreach ($reserveds->subjects as $subject) {
+                foreach ($subject->times as $time) {
+                    if ($time->time_name === $value) {
+                        array_push($kamoku, $subject->name);
+                    }
+                }
+            }
+            $reserve_list[$value] = $kamoku;
+        }
+        if(empty($reserve_list)){
+            $reserve_list = null;
+        }
         return view('user/training_list', [
-            'user' => $user,
             'time_list' => $time_list,
-            'result' => $result,
-            'reserveds' =>$reserveds,
+            'reserve_list' => $reserve_list,
+            'result' => 'none',
         ]);
     }
 }
