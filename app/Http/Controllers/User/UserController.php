@@ -104,8 +104,6 @@ class UserController extends Controller
                 if (isset($reserved_list[$subject->name])) {
                     foreach ($reserved_list[$subject->name] as $reserved_time) {
                         if ($reserved_time === $user_time->time_name) {
-                            print("time_name:");
-                            print($user_time->time_name);
                             $user_time->is_reserved = true;
                         }
                     }
